@@ -6,7 +6,7 @@ export default function ResumeEditPage() {
   const { resumeId } = useParams<{ resumeId: string }>()
 
   if (!resumeId) {
-    return <p className="text-muted-foreground py-16 text-center text-sm">缺少简历 ID。</p>
+    return <p className="text-muted-foreground py-16 text-center text-sm">MISS ID</p>
   }
 
   return <ResumeEditor resumeId={resumeId} />

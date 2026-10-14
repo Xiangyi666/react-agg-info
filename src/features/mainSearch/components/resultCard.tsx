@@ -1,10 +1,12 @@
 import type { result } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Bookmark, Bomb } from 'lucide-react'
 import { collect } from '@/features/mainSearch/api'
 export default function ResultCard(resultProp: result) {
   const { title, description, url, source, keywords, country } = resultProp
+  const navigate = useNavigate()
   return (
     <Card className="flex gap-3 p-4 transition-shadow hover:shadow-md">
       <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -53,8 +55,13 @@ export default function ResultCard(resultProp: result) {
         >
           <Bookmark className="size-5" />
         </Button>
-        <Button variant="ghost" size="icon" aria-label="发散">
-          <Bomb className="size-5"></Bomb>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="发散"
+          onClick={() => navigate(`/resume/${resultProp.id}`)}
+        >
+          <Bomb className="size-5" />
         </Button>
       </div>
     </Card>

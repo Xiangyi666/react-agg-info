@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ResumeData } from '../types'
 import type { WriteSection } from '../model'
-import { getEntries, getSectionObject, resolveSection, SECTION_LABELS } from '../model'
+import { getEntries, getSectionObject, resolveWriteSection, SECTION_LABELS } from '../model'
 import { createEntry } from '../schema'
 import { useResumeData, useUpdateResumeData } from '../hooks'
 import { EntryCard } from './entry-card'
@@ -170,7 +170,7 @@ export function SectionRow({ id, onMove, canMoveUp, canMoveDown }: SectionRowPro
   const data = useResumeData()
   if (!data) return null
 
-  const section = resolveSection(data, id)
+  const section = resolveWriteSection(data, id)
   if (!section) return null
 
   return (

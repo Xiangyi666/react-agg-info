@@ -14,7 +14,7 @@ const data: ResumeData = {
     rotation: 0,
     aspectRatio: 1,
     borderRadius: 0,
-    borderColor: 'rgba(0, 0, 0, 0.5)',
+    borderColor: 'rgba(137, 137, 137, 0.5)',
     borderWidth: 0,
     shadowColor: 'rgba(0, 0, 0, 0.5)',
     shadowWidth: 0,
@@ -305,7 +305,7 @@ const data: ResumeData = {
     },
     design: {
       colors: {
-        primary: 'rgba(220, 38, 38, 1)',
+        primary: 'rgba(175, 175, 175, 1)',
         text: 'rgba(0, 0, 0, 1)',
         background: 'rgba(255, 255, 255, 1)',
       },

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { CustomSectionType, SectionType } from '../types'
 import {
   BUILTIN_SECTION_TYPES,
-  CUSTOM_SECTION_TYPES,
+  NEW_CUSTOM_SECTION_TYPES,
   addBuiltinSection,
   addCustomSection,
   getOutlineRows,
@@ -118,7 +118,7 @@ function AddSectionMenu() {
           ))}
           <Separator className="my-1" />
           <p className="text-muted-foreground px-2 py-1 text-xs">新建自定义分区</p>
-          {CUSTOM_SECTION_TYPES.map((type) => (
+          {NEW_CUSTOM_SECTION_TYPES.map((type) => (
             <Button
               key={type}
               variant="ghost"

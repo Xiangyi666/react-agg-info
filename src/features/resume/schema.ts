@@ -1,8 +1,6 @@
 import type { CustomSectionType, Entry, ResumeData } from './types'
+import { getSectionTypeDefinition, initialEntryValue } from './types'
 import { clone, generateId, isPlainObject } from './utils'
-
-/** 空白条目的公共底座。 */
-const emptyWebsite = () => ({ url: '', label: '', inlineLink: false })
 
 /** 内置分区的默认骨架（12 个分区共用），移植自 reactive-resume default.ts。 */
 const section = () => ({
@@ -161,44 +159,15 @@ export function parseResumeData(input: unknown): ResumeData {
 
 /**
  * 按分区类型创建一个空白条目，"+ 添加条目"和新分区的首个草稿都用它。
- * 移植自 reactive-resume write/model.ts 的 createEntry（去掉结构化 dates）。
+ * 字段与初始值从类型注册表派生：编辑字段按 kind 生成空值，icon 等无控件字段来自 initialFields。
  */
 export function createEntry(type: CustomSectionType): Entry {
-  const base = { id: generateId(), hidden: false }
+  const definition = getSectionTypeDefinition(type)
+  const fields: Record<string, unknown> = { ...definition?.initialFields }
 
-  const fields: Record<CustomSectionType, Record<string, unknown>> = {
-    profiles: { icon: '', iconColor: '', network: '', username: '', website: emptyWebsite() },
-    experience: {
-      company: '',
-      position: '',
-      location: '',
-      period: '',
-      website: emptyWebsite(),
-      description: '',
-      roles: [],
-    },
-    education: {
-      school: '',
-      degree: '',
-      area: '',
-      grade: '',
-      location: '',
-      period: '',
-      website: emptyWebsite(),
-      description: '',
-    },
-    projects: { name: '', period: '', website: emptyWebsite(), description: '' },
-    skills: { icon: '', iconColor: '', name: '', proficiency: '', level: 0, keywords: [] },
-    languages: { language: '', fluency: '', level: 0 },
-    interests: { icon: '', iconColor: '', name: '', keywords: [] },
-    awards: { title: '', awarder: '', date: '', website: emptyWebsite(), description: '' },
-    certifications: { title: '', issuer: '', date: '', website: emptyWebsite(), description: '' },
-    publications: { title: '', publisher: '', date: '', website: emptyWebsite(), description: '' },
-    volunteer: { organization: '', location: '', period: '', website: emptyWebsite(), description: '' },
-    references: { name: '', position: '', website: emptyWebsite(), phone: '', description: '' },
-    summary: { content: '' },
-    'cover-letter': { recipient: '', content: '' },
+  for (const spec of definition?.editorFields ?? []) {
+    fields[spec.key] = initialEntryValue(spec)
   }
 
-  return { ...base, ...fields[type] } as Entry
+  return { id: generateId(), hidden: false, ...fields } as Entry
 }

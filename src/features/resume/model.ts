@@ -1,5 +1,6 @@
 import type { CustomSection, CustomSectionType, ResumeData, SectionType } from './types'
 import { createEntry } from './schema'
+import { CUSTOM_SECTION_TYPES, getSectionTypeDefinition, SECTION_TYPES } from './types'
 import { generateId, stripHtml } from './utils'
 
 /**
@@ -31,55 +32,33 @@ export const BUILTIN_SECTION_TYPES: readonly SectionType[] = [
   'references',
 ]
 
-/** 新建自定义分区时可选的条目类型。 */
-export const CUSTOM_SECTION_TYPES = [
-  'experience',
-  'education',
-  'projects',
-  'skills',
-  'languages',
-  'interests',
-  'awards',
-  'certifications',
-  'publications',
-  'volunteer',
-  'references',
-  'profiles',
-  'summary',
-] as const satisfies readonly CustomSectionType[]
+/** 新建自定义分区时可选的条目类型：全集过滤掉求职信专用类型，清单与顺序都从唯一源派生。 */
+export const NEW_CUSTOM_SECTION_TYPES = CUSTOM_SECTION_TYPES.filter(
+  (type): type is Exclude<CustomSectionType, 'cover-letter'> => type !== 'cover-letter',
+)
 
-/** 分区的中文默认标题：title 为空时大纲与预览用它展示。 */
-export const SECTION_LABELS: Record<CustomSectionType, string> = {
-  summary: '个人总结',
-  profiles: '社交主页',
-  experience: '工作经历',
-  education: '教育背景',
-  projects: '项目经历',
-  skills: '专业技能',
-  languages: '语言能力',
-  interests: '兴趣爱好',
-  awards: '荣誉奖项',
-  certifications: '专业证书',
-  publications: '发表作品',
-  volunteer: '志愿活动',
-  references: '推荐人',
-  'cover-letter': '求职信',
-}
+/** 分区的中文默认标题：从类型注册表派生，title 为空时大纲与预览用它展示。 */
+export const SECTION_LABELS = Object.fromEntries(
+  Object.entries(SECTION_TYPES).map(([type, definition]) => [type, definition.label]),
+) as Record<CustomSectionType, string>
 
-const isBuiltinSectionType = (id: string): id is SectionType =>
-  (BUILTIN_SECTION_TYPES as readonly string[]).includes(id)
+const isBuiltinType = (id: string) =>
+  BUILTIN_SECTION_TYPES.includes(id as SectionType)
+
+/** 固定分区（summary 与内置分区）：id 即类型名，不像自定义分区那样用 UUID。 */
+const isFixedSectionType = (id: string) => id === 'summary' || isBuiltinType(id)
 
 export const getSectionKind = (id: string): WriteSection['kind'] =>
-  id === 'summary' ? 'summary' : isBuiltinSectionType(id) ? 'builtin' : 'custom'
+  id === 'summary' ? 'summary' : isBuiltinType(id) ? 'builtin' : 'custom'
 
-/** 分区 id 对应的条目类型：summary 与内置分区即自身 key，自定义分区读取存储的 type。 */
+/** 分区 id 对应的条目类型：固定分区 id 即自身类型名，自定义分区读取存储的 type。 */
 export function getSectionType(data: ResumeData, id: string): CustomSectionType | undefined {
-  if (id === 'summary') return 'summary'
-  if (isBuiltinSectionType(id)) return id
+  if (isFixedSectionType(id)) return id as CustomSectionType
   return data.customSections.find((section) => section.id === id)?.type
 }
 
-export function resolveSection(data: ResumeData, id: string): WriteSection | null {
+/** 把布局 id（'summary' | 内置类型名 | 自定义分区 UUID）解析成大纲行结构。 */
+export function resolveWriteSection(data: ResumeData, id: string): WriteSection | null {
   const type = getSectionType(data, id)
   return type ? { id, kind: getSectionKind(id), type } : null
 }
@@ -103,31 +82,16 @@ export function getSectionObject(
 }
 
 export function findEntry(data: ResumeData, sectionId: string, entryId: string) {
-  const section = resolveSection(data, sectionId)
+  const section = resolveWriteSection(data, sectionId)
   return section ? getEntries(data, section).find((entry) => entry.id === entryId) : undefined
 }
 
-/** 条目打印前必须有的主字段，与 PDF 渲染过滤一致；其余字段为空也打印。 */
-const PRIMARY_FIELD: Partial<Record<CustomSectionType, string>> = {
-  profiles: 'network',
-  experience: 'company',
-  education: 'school',
-  projects: 'name',
-  skills: 'name',
-  languages: 'language',
-  interests: 'name',
-  awards: 'title',
-  certifications: 'title',
-  publications: 'title',
-  volunteer: 'organization',
-  references: 'name',
-}
-
-export const getPrimaryField = (type: CustomSectionType) => PRIMARY_FIELD[type]
+/** 条目打印前必须有的主字段（来自注册表），与 PDF 渲染过滤一致；其余字段为空也打印。 */
+export const getPrimaryField = (type: CustomSectionType) => getSectionTypeDefinition(type)?.primaryField
 
 /** 缺主字段的条目是草稿：保留在数据里，但预览与打印都不显示。 */
 export function isDraftEntry(type: CustomSectionType, entry: Record<string, unknown>): boolean {
-  const field = PRIMARY_FIELD[type]
+  const field = getSectionTypeDefinition(type)?.primaryField
   if (!field) return false
   const value = entry[field]
   return typeof value !== 'string' || !value.trim()
@@ -185,7 +149,7 @@ export function describeEntry(type: CustomSectionType, entry: Record<string, unk
 /** 分区是否有内容（summary 看正文，内置分区看条目数，自定义分区恒为有）。 */
 export function isSectionInUse(data: ResumeData, id: string, recentlyAdded: ReadonlySet<string> = new Set()) {
   if (recentlyAdded.has(id)) return true
-  const section = resolveSection(data, id)
+  const section = resolveWriteSection(data, id)
   if (!section) return false
   if (section.kind === 'summary') return Boolean(stripHtml(data.summary.content).trim())
   if (section.kind === 'custom') return true

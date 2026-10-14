@@ -137,22 +137,29 @@ export interface Sections {
 export type SectionType = keyof Sections
 export type Section = Sections[SectionType]
 
-/** 自定义分区可使用的条目类型（与内置分区共用一套 item 结构）。 */
-export type CustomSectionType =
-  | 'summary'
-  | 'profiles'
-  | 'experience'
-  | 'education'
-  | 'projects'
-  | 'skills'
-  | 'languages'
-  | 'interests'
-  | 'awards'
-  | 'certifications'
-  | 'publications'
-  | 'volunteer'
-  | 'references'
-  | 'cover-letter'
+/**
+ * 条目类型的唯一清单（与内置分区共用一套 item 结构）。
+ * 联合类型 CustomSectionType、类型注册表与派生列表都由它产生，新增类型只改这一处；
+ * 数组顺序同时是“新建自定义分区”列表的展示顺序。
+ */
+export const CUSTOM_SECTION_TYPES = [
+  'experience',
+  'education',
+  'projects',
+  'skills',
+  'languages',
+  'interests',
+  'awards',
+  'certifications',
+  'publications',
+  'volunteer',
+  'references',
+  'profiles',
+  'summary',
+  'cover-letter',
+] as const
+
+export type CustomSectionType = (typeof CUSTOM_SECTION_TYPES)[number]
 
 /** 自定义分区：按 id 索引，条目结构由 type 决定。 */
 export interface CustomSection extends SectionCommon {
@@ -164,7 +171,7 @@ export interface CustomSection extends SectionCommon {
 
 export interface PageLayout {
   fullWidth: boolean
-  /** 主栏内的分区 id 顺序（内置分区用类型名，自定义分区用 UUID）。 */
+  /** 主栏内的分区 id 顺序（summary 与内置分区用类型名，自定义分区用 UUID）。 */
   main: string[]
   sidebar: string[]
 }

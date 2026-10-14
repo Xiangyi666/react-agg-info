@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import type { CustomSectionType, RoleItem } from '../types'
+import type { CustomSectionType, EditorFieldSpec, RoleItem } from '../types'
+import { getSectionTypeDefinition } from '../types'
 import { generateId } from '../utils'
 import { KeywordsField, LevelField, TextAreaField, TextField, WebsiteField } from './fields'
 import { Button } from '@/components/ui/button'
@@ -124,158 +125,57 @@ function Roles({ entry, write }: EntryWriteProps) {
   )
 }
 
-/** 按条目类型渲染全部编辑字段，外层是两列栅格。 */
+/** 按条目类型渲染全部编辑字段（字段与顺序来自类型注册表），外层是两列栅格。 */
 export function EntryFields({ type, autoFocus = false, ...props }: EntryFieldSetProps) {
-  switch (type) {
-    case 'experience':
+  const definition = getSectionTypeDefinition(type)
+
+  if (!definition) {
+    console.warn(`[resume] 未注册编辑字段的条目类型: ${type}`)
+    return null
+  }
+
+  return (
+    <>
+      {definition.editorFields.map((spec) => renderEditorField(spec, props, autoFocus && Boolean(spec.autoFocus)))}
+    </>
+  )
+}
+
+/** 把一条字段规格渲染成对应控件。 */
+function renderEditorField(spec: EditorFieldSpec, props: EntryWriteProps, focus: boolean): ReactNode {
+  switch (spec.kind ?? 'text') {
+    case 'text':
+      return text(props, spec.key, spec.label ?? spec.key, spec.wide, focus)
+    case 'textarea':
+      return <Description key={spec.key} {...props} field={spec.key} label={spec.label ?? '描述'} />
+    case 'website':
+      return <WebsiteFieldWrapper key={spec.key} {...props} allowInlineLink />
+    case 'keywords':
       return (
-        <>
-          {text(props, 'position', '职位', false, autoFocus)}
-          {text(props, 'company', '公司')}
-          {text(props, 'location', '地点', true)}
-          {text(props, 'period', '时间', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-          <Roles {...props} />
-        </>
+        <Keywords
+          key={spec.key}
+          {...props}
+          onChange={(keywords) =>
+            props.write('keywords', (target) => {
+              target.keywords = keywords
+            })
+          }
+        />
       )
-    case 'education':
+    case 'level':
       return (
-        <>
-          {text(props, 'school', '学校', true, autoFocus)}
-          {text(props, 'degree', '学位')}
-          {text(props, 'area', '专业')}
-          {text(props, 'grade', '成绩')}
-          {text(props, 'location', '地点')}
-          {text(props, 'period', '时间', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
+        <Level
+          key={spec.key}
+          {...props}
+          onChange={(level) =>
+            props.write('level', (target) => {
+              target.level = level
+            })
+          }
+        />
       )
-    case 'projects':
-      return (
-        <>
-          {text(props, 'name', '项目名', true, autoFocus)}
-          {text(props, 'period', '时间', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'skills':
-      return (
-        <>
-          {text(props, 'name', '名称', false, autoFocus)}
-          {text(props, 'proficiency', '熟练度')}
-          <Keywords
-            {...props}
-            onChange={(keywords) =>
-              props.write('keywords', (target) => {
-                target.keywords = keywords
-              })
-            }
-          />
-          <Level
-            {...props}
-            onChange={(level) =>
-              props.write('level', (target) => {
-                target.level = level
-              })
-            }
-          />
-        </>
-      )
-    case 'languages':
-      return (
-        <>
-          {text(props, 'language', '语言', false, autoFocus)}
-          {text(props, 'fluency', '流利程度')}
-          <Level
-            {...props}
-            onChange={(level) =>
-              props.write('level', (target) => {
-                target.level = level
-              })
-            }
-          />
-        </>
-      )
-    case 'interests':
-      return (
-        <>
-          {text(props, 'name', '名称', true, autoFocus)}
-          <Keywords
-            {...props}
-            onChange={(keywords) =>
-              props.write('keywords', (target) => {
-                target.keywords = keywords
-              })
-            }
-          />
-        </>
-      )
-    case 'awards':
-      return (
-        <>
-          {text(props, 'title', '奖项名', false, autoFocus)}
-          {text(props, 'awarder', '颁发机构')}
-          {text(props, 'date', '日期', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'certifications':
-      return (
-        <>
-          {text(props, 'title', '证书名', false, autoFocus)}
-          {text(props, 'issuer', '颁发机构')}
-          {text(props, 'date', '日期', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'publications':
-      return (
-        <>
-          {text(props, 'title', '作品名', false, autoFocus)}
-          {text(props, 'publisher', '发布平台')}
-          {text(props, 'date', '日期', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'volunteer':
-      return (
-        <>
-          {text(props, 'organization', '组织', false, autoFocus)}
-          {text(props, 'location', '地点')}
-          {text(props, 'period', '时间', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'references':
-      return (
-        <>
-          {text(props, 'name', '姓名 / 备注', false, autoFocus)}
-          {text(props, 'position', '职位')}
-          {text(props, 'phone', '电话', true)}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-          <Description {...props} />
-        </>
-      )
-    case 'profiles':
-      return (
-        <>
-          {text(props, 'network', '平台', false, autoFocus)}
-          {text(props, 'username', '用户名')}
-          <WebsiteFieldWrapper {...props} allowInlineLink />
-        </>
-      )
-    case 'summary':
-      return <Description {...props} field="content" label="正文" />
-    // cover-letter 不在简历编辑器里编辑（它是独立文档），留空
-    case 'cover-letter':
-      return null
+    case 'roles':
+      return <Roles key={spec.key} {...props} />
   }
 }
 
