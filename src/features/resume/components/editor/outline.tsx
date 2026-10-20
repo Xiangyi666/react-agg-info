@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CustomSectionType, SectionType } from '../types'
+import type { CustomSectionType, SectionType } from '../../types'
 import {
   BUILTIN_SECTION_TYPES,
   NEW_CUSTOM_SECTION_TYPES,
@@ -9,9 +9,9 @@ import {
   isSectionInUse,
   moveSection,
   SECTION_LABELS,
-} from '../model'
-import { useResumeData, useUpdateResumeData } from '../hooks'
-import { SectionRow } from './section-card'
+} from '../../model'
+import { useResumeData, useUpdateResumeData } from '../../hooks'
+import { SectionRow } from './section-row'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'

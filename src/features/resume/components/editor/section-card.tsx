@@ -1,9 +1,15 @@
 import { useState } from 'react'
-import type { ResumeData } from '../types'
-import type { WriteSection } from '../model'
-import { getEntries, getSectionObject, resolveWriteSection, SECTION_LABELS } from '../model'
-import { createEntry } from '../schema'
-import { useResumeData, useUpdateResumeData } from '../hooks'
+import type { ResumeData } from '../../types'
+import {
+  getEntries,
+  getSectionObject,
+  getSectionType,
+  isCustomSection,
+  isSummarySection,
+  SECTION_LABELS,
+} from '../../model'
+import { createEntry } from '../../schema'
+import { useResumeData, useUpdateResumeData } from '../../hooks'
 import { EntryCard } from './entry-card'
 import { TextAreaField, TextField } from './fields'
 import { Button } from '@/components/ui/button'
@@ -17,10 +23,10 @@ import { Eye, EyeOff, Plus, Trash2 } from 'lucide-react'
  */
 
 interface SectionCardProps {
-  section: WriteSection
+  sectionId: string
 }
 
-export function SectionCard({ section }: SectionCardProps) {
+export function SectionCard({ sectionId }: SectionCardProps) {
   const data = useResumeData()
   const updateResumeData = useUpdateResumeData()
   // 刚添加的条目自动展开；清空后恢复全部收起
@@ -28,50 +34,51 @@ export function SectionCard({ section }: SectionCardProps) {
 
   if (!data) return null
 
-  const sectionObject = getSectionObject(data, section)
+  const sectionObject = getSectionObject(data, sectionId)
   if (!sectionObject) return null
 
   const hidden = sectionObject.hidden
-  const label = SECTION_LABELS[section.type]
+  const sectionType = getSectionType(data, sectionId)!
+  const label = SECTION_LABELS[sectionType]
 
   /** 分区级写入：标题等字段的 coalesceKey 让连续改名合并为一次撤销。 */
   const writeSection = (key: string, mutate: (object: NonNullable<ReturnType<typeof getSectionObject>>) => void) => {
     updateResumeData(
       (draft) => {
-        const object = getSectionObject(draft, section)
+        const object = getSectionObject(draft, sectionId)
         if (object) mutate(object)
       },
-      { coalesceKey: `${section.id}:${key}` },
+      { coalesceKey: `${sectionId}:${key}` },
     )
   }
 
   /** 结构操作（删除分区等）独立成撤销步骤。 */
   const mutateStructure = (fn: (draft: ResumeData) => void, key: string) => {
-    updateResumeData(fn, { newStep: true, coalesceKey: `${section.id}:${key}` })
+    updateResumeData(fn, { newStep: true, coalesceKey: `${sectionId}:${key}` })
   }
 
-  const entries = getEntries(data, section)
+  const entries = getEntries(data, sectionId)
 
   const addEntry = () => {
     // 草稿函数在 dispatch 内同步执行，返回后就能拿到新条目 id
     let newEntryId = ''
     updateResumeData(
       (draft) => {
-        const entry = createEntry(section.type)
-        getEntries(draft, section).push(entry)
+        const entry = createEntry(sectionType)
+        getEntries(draft, sectionId).push(entry)
         newEntryId = entry.id
       },
-      { newStep: true, coalesceKey: `${section.id}:add-entry` },
+      { newStep: true, coalesceKey: `${sectionId}:add-entry` },
     )
     setOpenEntryId(newEntryId)
   }
 
   const removeCustomSection = () => {
     mutateStructure((draft) => {
-      draft.customSections = draft.customSections.filter((custom) => custom.id !== section.id)
+      draft.customSections = draft.customSections.filter((custom) => custom.id !== sectionId)
       for (const page of draft.metadata.layout.pages) {
-        page.main = page.main.filter((id) => id !== section.id)
-        page.sidebar = page.sidebar.filter((id) => id !== section.id)
+        page.main = page.main.filter((id) => id !== sectionId)
+        page.sidebar = page.sidebar.filter((id) => id !== sectionId)
       }
     }, 'remove-section')
   }
@@ -104,7 +111,7 @@ export function SectionCard({ section }: SectionCardProps) {
           >
             {hidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
           </Button>
-          {section.kind === 'custom' && (
+          {isCustomSection(sectionId) && (
             <Button
               variant="ghost"
               size="icon"
@@ -118,7 +125,7 @@ export function SectionCard({ section }: SectionCardProps) {
         </div>
       </div>
 
-      {section.kind === 'summary' ? (
+      {isSummarySection(sectionId) ? (
         <div className="mt-1 grid grid-cols-1 gap-2">
           <TextAreaField
             label="正文"
@@ -129,7 +136,7 @@ export function SectionCard({ section }: SectionCardProps) {
                 (draft) => {
                   draft.summary.content = value
                 },
-                { coalesceKey: `${section.id}:content` },
+                { coalesceKey: `${sectionId}:content` },
               )
             }
           />
@@ -139,7 +146,8 @@ export function SectionCard({ section }: SectionCardProps) {
           {entries.map((entry, index) => (
             <EntryCard
               key={entry.id}
-              section={section}
+              sectionId={sectionId}
+              sectionType={sectionType}
               entryId={entry.id}
               index={index}
               count={entries.length}
@@ -152,38 +160,6 @@ export function SectionCard({ section }: SectionCardProps) {
           </Button>
         </div>
       )}
-    </div>
-  )
-}
-
-interface SectionRowProps {
-  /** 大纲行 id（分区 id）。 */
-  id: string
-  /** 上下移动分区（跨页/跨栏由 moveSection 处理）。 */
-  onMove: (direction: 'up' | 'down') => void
-  canMoveUp: boolean
-  canMoveDown: boolean
-}
-
-/** 大纲行包装：分区卡片 + 行级移动按钮。 */
-export function SectionRow({ id, onMove, canMoveUp, canMoveDown }: SectionRowProps) {
-  const data = useResumeData()
-  if (!data) return null
-
-  const section = resolveWriteSection(data, id)
-  if (!section) return null
-
-  return (
-    <div className="grid gap-1">
-      <SectionCard section={section} />
-      <div className="flex justify-center gap-1">
-        <Button variant="ghost" size="sm" disabled={!canMoveUp} onClick={() => onMove('up')} title="分区上移">
-          ↑ 上移
-        </Button>
-        <Button variant="ghost" size="sm" disabled={!canMoveDown} onClick={() => onMove('down')} title="分区下移">
-          ↓ 下移
-        </Button>
-      </div>
     </div>
   )
 }

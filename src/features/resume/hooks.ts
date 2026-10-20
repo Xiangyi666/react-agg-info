@@ -24,6 +24,9 @@ export const useCanUndo = () => useAppSelector((state) => state.resume.canUndo)
 
 export const useCanRedo = () => useAppSelector((state) => state.resume.canRedo)
 
+/** 左侧大纲悬停的分区 id，右侧画板用来高亮对应区块。 */
+export const useHoveredSectionId = () => useAppSelector((state) => state.resume.hoveredSectionId)
+
 /**
  * 核心编辑入口的 dispatch 封装。coalesceKey 标识正在编辑的字段，
  * 让一句话的连续输入合并为一次撤销；结构性操作传 newStep: true。

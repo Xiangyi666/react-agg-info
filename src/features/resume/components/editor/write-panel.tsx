@@ -1,7 +1,7 @@
 import { BasicsCard } from './basics-card'
 import { Outline } from './outline'
-import { useResumeData } from '../hooks'
-import { getOutlineRows } from '../model'
+import { useResumeData } from '../../hooks'
+import { getOutlineRows } from '../../model'
 
 /**
  * Write 面板：基本信息 + 按打印顺序的分区大纲 + 添加分区。
@@ -17,13 +17,13 @@ export function WritePanel() {
       <BasicsCard />
 
       <div>
-        <p className="text-muted-foreground mb-1.5 flex items-baseline justify-between px-1 text-[11px] font-semibold tracking-[0.08em] uppercase">
+        {/* <p className="text-muted-foreground mb-1.5 flex items-baseline justify-between px-1 text-[11px] font-semibold tracking-[0.08em] uppercase">
           <span>分区 · 按打印顺序</span>
           <span className="font-normal tracking-normal normal-case">上下移动排序</span>
-        </p>
+        </p> */}
         {isEmpty ? (
           <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            还没有内容。点击下方"添加分区"开始编辑，每个分区会自动放入简历页面。
+           点击下方"添加分区"开始编辑
           </p>
         ) : (
           <Outline />

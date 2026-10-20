@@ -1,4 +1,4 @@
-import type { CustomSection, CustomSectionType, ResumeData, SectionType } from './types'
+import type { CustomSection, CustomSectionType, Entry, ResumeData, SectionType } from './types'
 import { createEntry } from './schema'
 import { CUSTOM_SECTION_TYPES, getSectionTypeDefinition, SECTION_TYPES } from './types'
 import { generateId, stripHtml } from './utils'
@@ -8,13 +8,6 @@ import { generateId, stripHtml } from './utils'
  * 移植自 reactive-resume apps/web/src/features/resume/editor/write/model.ts，
  * 移除了结构化日期与 roles 的编辑辅助（类型仍保留兼容）。
  */
-
-/** 大纲中的一行：summary、内置分区（按类型名索引）或自定义分区（按 id 索引）。 */
-export interface WriteSection {
-  id: string
-  kind: 'summary' | 'builtin' | 'custom'
-  type: CustomSectionType
-}
 
 /** 内置分区类型（不含 summary 与 cover-letter，它们不是内置 sections 的键）。 */
 export const BUILTIN_SECTION_TYPES: readonly SectionType[] = [
@@ -48,8 +41,11 @@ const isBuiltinType = (id: string) =>
 /** 固定分区（summary 与内置分区）：id 即类型名，不像自定义分区那样用 UUID。 */
 const isFixedSectionType = (id: string) => id === 'summary' || isBuiltinType(id)
 
-export const getSectionKind = (id: string): WriteSection['kind'] =>
-  id === 'summary' ? 'summary' : isBuiltinType(id) ? 'builtin' : 'custom'
+/** 判断 id 是否为 summary 分区。 */
+export const isSummarySection = (id: string) => id === 'summary'
+
+/** 判断 id 是否为自定义分区（非 summary 且非内置类型）。 */
+export const isCustomSection = (id: string) => !isFixedSectionType(id)
 
 /** 分区 id 对应的条目类型：固定分区 id 即自身类型名，自定义分区读取存储的 type。 */
 export function getSectionType(data: ResumeData, id: string): CustomSectionType | undefined {
@@ -57,33 +53,26 @@ export function getSectionType(data: ResumeData, id: string): CustomSectionType 
   return data.customSections.find((section) => section.id === id)?.type
 }
 
-/** 把布局 id（'summary' | 内置类型名 | 自定义分区 UUID）解析成大纲行结构。 */
-export function resolveWriteSection(data: ResumeData, id: string): WriteSection | null {
-  const type = getSectionType(data, id)
-  return type ? { id, kind: getSectionKind(id), type } : null
-}
-
 /** 分区的条目列表（draft 或已保存数据通用），summary 没有条目。 */
-export function getEntries(data: ResumeData, section: WriteSection) {
-  if (section.kind === 'builtin') return data.sections[section.id as SectionType].items
-  if (section.kind === 'custom')
-    return data.customSections.find((custom) => custom.id === section.id)?.items ?? []
-  return []
+export function getEntries(data: ResumeData, sectionId: string): Entry[] {
+  if (isSummarySection(sectionId)) return []
+  if (isBuiltinType(sectionId)) return data.sections[sectionId as SectionType].items
+  return data.customSections.find((custom) => custom.id === sectionId)?.items ?? []
 }
 
 /** 分区自身的设置（title、columns、hidden 等），三类分区共享同一结构。 */
 export function getSectionObject(
   data: ResumeData,
-  section: WriteSection,
+  sectionId: string,
 ): ResumeData['summary'] | ResumeData['sections'][SectionType] | CustomSection | undefined {
-  if (section.kind === 'summary') return data.summary
-  if (section.kind === 'builtin') return data.sections[section.id as SectionType]
-  return data.customSections.find((custom) => custom.id === section.id)
+  if (isSummarySection(sectionId)) return data.summary
+  if (isBuiltinType(sectionId)) return data.sections[sectionId as SectionType]
+  return data.customSections.find((custom) => custom.id === sectionId)
 }
 
 export function findEntry(data: ResumeData, sectionId: string, entryId: string) {
-  const section = resolveWriteSection(data, sectionId)
-  return section ? getEntries(data, section).find((entry) => entry.id === entryId) : undefined
+  const type = getSectionType(data, sectionId)
+  return type ? getEntries(data, sectionId).find((entry) => entry.id === entryId) : undefined
 }
 
 /** 条目打印前必须有的主字段（来自注册表），与 PDF 渲染过滤一致；其余字段为空也打印。 */
@@ -149,11 +138,10 @@ export function describeEntry(type: CustomSectionType, entry: Record<string, unk
 /** 分区是否有内容（summary 看正文，内置分区看条目数，自定义分区恒为有）。 */
 export function isSectionInUse(data: ResumeData, id: string, recentlyAdded: ReadonlySet<string> = new Set()) {
   if (recentlyAdded.has(id)) return true
-  const section = resolveWriteSection(data, id)
-  if (!section) return false
-  if (section.kind === 'summary') return Boolean(stripHtml(data.summary.content).trim())
-  if (section.kind === 'custom') return true
-  return getEntries(data, section).length > 0
+  if (!getSectionType(data, id)) return false
+  if (isSummarySection(id)) return Boolean(stripHtml(data.summary.content).trim())
+  if (isCustomSection(id)) return true
+  return getEntries(data, id).length > 0
 }
 
 /** 大纲行：位于第几页、哪一栏。 */

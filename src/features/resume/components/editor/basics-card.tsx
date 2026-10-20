@@ -1,5 +1,5 @@
-import type { Basics } from '../types'
-import { useResumeData, useUpdateResumeData } from '../hooks'
+import type { Basics } from '../../types'
+import { useResumeData, useUpdateResumeData } from '../../hooks'
 import { TextField, WebsiteField } from './fields'
 import { cn } from '@/lib/utils'
 

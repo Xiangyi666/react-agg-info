@@ -1,7 +1,17 @@
+import { useEffect, useRef } from 'react'
 import type { ResumeData } from '../../types'
-import { resolveWriteSection, isDraftEntry, getEntries, getSectionObject, SECTION_LABELS } from '../../model'
+import {
+  isDraftEntry,
+  getEntries,
+  getSectionObject,
+  getSectionType,
+  isSummarySection,
+  SECTION_LABELS,
+} from '../../model'
+import { useHoveredSectionId } from '../../hooks'
 import { EntryView } from './entry-view'
 import { RichText } from './rich-text'
+import { cn } from '@/lib/utils'
 
 interface SectionViewProps {
   data: ResumeData
@@ -11,21 +21,32 @@ interface SectionViewProps {
 
 /** 一个分区的展示：可选标题 + 过滤后的条目（隐藏与未成形的草稿不进入预览）。 */
 export function SectionView({ data, sectionId, primaryColor }: SectionViewProps) {
-  const section = resolveWriteSection(data, sectionId)
-  if (!section) return null
+  const sectionType = getSectionType(data, sectionId)
+  const hoveredSectionId = useHoveredSectionId()
+  const sectionRef = useRef<HTMLElement>(null)
+  const isHovered = hoveredSectionId === sectionId
 
-  const object = getSectionObject(data, section)
+  // 悬停时平滑滚动到视口中央
+  useEffect(() => {
+    if (isHovered && sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [isHovered])
+
+  if (!sectionType) return null
+
+  const object = getSectionObject(data, sectionId)
   if (!object || object.hidden) return null
 
-  const heading = object.title || SECTION_LABELS[section.type]
+  const heading = object.title || SECTION_LABELS[sectionType]
 
-  const items = getEntries(data, section).filter((entry) => !entry.hidden && !isDraftEntry(section.type, entry))
+  const items = getEntries(data, sectionId).filter((entry) => !entry.hidden && !isDraftEntry(sectionType, entry))
 
-  if (section.kind === 'summary') {
+  if (isSummarySection(sectionId)) {
     const content = data.summary.content.trim()
     if (!content) return null
     return (
-      <section>
+      <section ref={sectionRef} className={cn('rounded transition-colors', isHovered && 'bg-red-50 -mx-2 px-2')}>
         {data.summary.showHeading !== false && <SectionHeading heading={heading} primaryColor={primaryColor} />}
         <RichText value={content} />
       </section>
@@ -35,10 +56,10 @@ export function SectionView({ data, sectionId, primaryColor }: SectionViewProps)
   if (items.length === 0) return null
 
   return (
-    <section>
+    <section ref={sectionRef} className={cn('rounded transition-colors', isHovered && 'bg-red-50 -mx-2 px-2')}>
       {object.showHeading !== false && <SectionHeading heading={heading} primaryColor={primaryColor} />}
       {items.map((entry) => (
-        <EntryView key={entry.id} type={section.type} entry={entry} primaryColor={primaryColor} />
+        <EntryView key={entry.id} type={sectionType} entry={entry} primaryColor={primaryColor} />
       ))}
     </section>
   )

@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import type { WriteSection } from '../model'
-import { describeEntry, getEntries, isDraftEntry } from '../model'
-import { useEntry, useEntryWriter, useUpdateResumeData } from '../hooks'
-import type { Entry } from '../types'
+import { describeEntry, getEntries, isDraftEntry } from '../../model'
+import { useEntry, useEntryWriter, useUpdateResumeData } from '../../hooks'
+import type { CustomSectionType, Entry } from '../../types'
 import { EntryFields } from './entry-fields'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronUp, Eye, EyeOff, Trash2 } from 'lucide-react'
 
 interface EntryCardProps {
-  section: WriteSection
+  sectionId: string
+  sectionType: CustomSectionType
   entryId: string
   index: number
   count: number
@@ -21,9 +21,9 @@ interface EntryCardProps {
  * 一条条目的卡片：折叠头（标题摘要 + 结构操作）+ 展开的字段集。
  * 对应 reactive-resume write/entry-card.tsx（无 dnd，改为上下移动按钮）。
  */
-export function EntryCard({ section, entryId, index, count, defaultOpen = false }: EntryCardProps) {
-  const entry = useEntry(section.id, entryId)
-  const write = useEntryWriter(section.id, entryId)
+export function EntryCard({ sectionId, sectionType, entryId, index, count, defaultOpen = false }: EntryCardProps) {
+  const entry = useEntry(sectionId, entryId)
+  const write = useEntryWriter(sectionId, entryId)
   const updateResumeData = useUpdateResumeData()
   const [open, setOpen] = useState(defaultOpen)
 
@@ -31,17 +31,17 @@ export function EntryCard({ section, entryId, index, count, defaultOpen = false 
   if (!entry) return null
 
   const hidden = Boolean(entry.hidden)
-  const draft = isDraftEntry(section.type, entry)
-  const { title, meta } = describeEntry(section.type, entry)
+  const draft = isDraftEntry(sectionType, entry)
+  const { title, meta } = describeEntry(sectionType, entry)
 
   /** 条目在分区内的结构操作：移动/删除/隐藏都是独立撤销步骤。 */
   const mutateEntries = (mutate: (entries: Entry[]) => void, key: string) => {
     updateResumeData(
       (draftData) => {
-        const entries = getEntries(draftData, section)
+        const entries = getEntries(draftData, sectionId)
         mutate(entries)
       },
-      { newStep: true, coalesceKey: `${section.id}:${key}` },
+      { newStep: true, coalesceKey: `${sectionId}:${key}` },
     )
   }
 
@@ -120,7 +120,7 @@ export function EntryCard({ section, entryId, index, count, defaultOpen = false 
 
       {open && (
         <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 border-t p-3">
-          <EntryFields type={section.type} entry={entry} write={write} />
+          <EntryFields type={sectionType} entry={entry} write={write} />
         </div>
       )}
     </div>

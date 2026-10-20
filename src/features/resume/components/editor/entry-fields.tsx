@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import type { CustomSectionType, EditorFieldSpec, RoleItem } from '../types'
-import { getSectionTypeDefinition } from '../types'
-import { generateId } from '../utils'
+import type { CustomSectionType, EditorFieldSpec, RoleItem } from '../../types'
+import { getSectionTypeDefinition } from '../../types'
+import { generateId } from '../../utils'
 import { KeywordsField, LevelField, TextAreaField, TextField, WebsiteField } from './fields'
 import { Button } from '@/components/ui/button'
 

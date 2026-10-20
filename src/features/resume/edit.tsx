@@ -5,8 +5,7 @@ import { applyHistoryStep, initialize, reset } from './resumeSlice'
 import { useCanRedo, useCanUndo, useCurrentResume, useSaveRuntime } from './hooks'
 import { deepEqual } from './utils'
 import { Artboard } from './components/artboard'
-import { SaveStatus } from './components/save-status'
-import { WritePanel } from './components/write-panel'
+import { SaveStatus, WritePanel } from './components/editor'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppDispatch } from '@/hooks/redux'
@@ -127,7 +126,7 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
   return (
     <div className="border-border -m-4 flex flex-col rounded-xl border" style={{ height: 'calc(100vh - 11rem)' }}>
       {/* 顶栏：简历名 + 保存状态 + 撤销/重做 */}
-      <div className="border-border flex items-center gap-3 border-b px-4 py-2">
+      {/* <div className="border-border flex items-center gap-3 border-b px-4 py-2">
         <span className="truncate font-medium">{resume.name}</span>
         <SaveStatus />
         <div className="ml-auto flex items-center gap-1">
@@ -152,10 +151,10 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
             <Redo2 className="size-4" />
           </Button>
         </div>
-      </div>
+      </div> */}
 
       {/* 主体：左编辑面板 + 右预览画板 */}
-      <div className="grid min-h-0 flex-1 grid-cols-[420px_1fr]">
+      <div className="grid min-h-0 flex-1 grid-cols-[540px_1fr]">
         <aside className="border-border min-h-0 overflow-y-auto border-r">
           <WritePanel />
         </aside>

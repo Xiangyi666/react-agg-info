@@ -15,20 +15,22 @@ interface ArtboardProps {
   scale?: number
 }
 
+/** 页码指示器：单页时隐藏。 */
+function PageIndex({ pageNumber, pageLength }: { pageNumber: number; pageLength: number }) {
+  if (pageLength == null || pageLength <= 1) return null
+  return (
+    <div className="text-muted-foreground absolute translate-y-[4px] left-1/2 -translate-x-1/2 text-[10px]">
+      第 {pageNumber + 1} / {pageLength} 页
+    </div>
+  )
+}
+
 /** 预览画板：逐页渲染 store 里的 ResumeData。 */
 export function Artboard({ scale = 1 }: ArtboardProps) {
   const data = useResumeData()
 
   if (!data) return null
 
-  function PageIndex({pageNumber, pageLength} : {pageNumber: number, pageLength: number}) {
-    if(pageLength == null || pageLength <= 1) return null
-    return (
-      <div className="text-muted-foreground absolute translate-y-[4px] left-1/2 -translate-x-1/2 text-[10px]">
-        第 {pageNumber + 1} / {pageLength} 页
-      </div>
-    )
-  }
   return (
     <div className="grid origin-top place-items-center gap-6" style={{ transform: `scale(${scale})` }}>
       {data.metadata.layout.pages.map((page, index) => (

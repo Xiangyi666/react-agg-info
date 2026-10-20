@@ -41,6 +41,7 @@ export function EntryView({ type, entry, primaryColor }: EntryViewProps) {
         <p className="text-[1em] leading-snug font-semibold">
           {primary || <span className="opacity-40">未命名</span>}
           {secondary && <span className="font-normal"> · {secondary}</span>}
+          {location && <span className="ml-4 opacity-70">{location}</span>}
           {website?.url && website.inlineLink && (
             <a
               href={website.url}
@@ -56,7 +57,6 @@ export function EntryView({ type, entry, primaryColor }: EntryViewProps) {
         {period && <p className="shrink-0 text-[0.9em] opacity-70">{period}</p>}
       </div>
 
-      {location && <p className="text-[0.9em] opacity-70">{location}</p>}
 
       {showSeparateLink && (
         <a

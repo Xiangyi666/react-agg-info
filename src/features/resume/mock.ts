@@ -6,318 +6,320 @@ import type { Resume, ResumeData } from './types'
  */
 
 const data: ResumeData = {
-  picture: {
-    hidden: true,
-    fit: 'cover',
-    url: '',
-    size: 80,
-    rotation: 0,
-    aspectRatio: 1,
-    borderRadius: 0,
-    borderColor: 'rgba(137, 137, 137, 0.5)',
-    borderWidth: 0,
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowWidth: 0,
+  "picture": {
+    "hidden": true,
+    "fit": "cover",
+    "url": "",
+    "size": 80,
+    "rotation": 0,
+    "aspectRatio": 1,
+    "borderRadius": 0,
+    "borderColor": "rgba(137,137,137,0.5)",
+    "borderWidth": 0,
+    "shadowColor": "rgba(0,0,0,0.5)",
+    "shadowWidth": 0
   },
-  basics: {
-    name: '李明',
-    headline: '前端工程师 · React / TypeScript',
-    email: 'liming@example.com',
-    phone: '+86 138 0000 0000',
-    location: '上海',
-    website: { url: 'https://liming.dev', label: 'liming.dev' },
-    customFields: [{ id: 'cf-github', icon: '', text: 'github.com/liming', link: 'https://github.com/liming' }],
+  "basics": {
+    "name": "L an",
+    "headline": "机械工程师 · 电池设计 / 电芯设计 / 成本控制",
+    "email": "",
+    "phone": "",
+    "location": "上海",
+    "website": {
+      "url": "",
+      "label": ""
+    },
+    "customFields": []
   },
-  summary: {
-    title: '',
-    icon: 'article',
-    columns: 1,
-    hidden: false,
-    showHeading: true,
-    keepTogether: false,
-    startOnNewPage: false,
-    content:
-      '五年前端开发经验，主导过多个中大型 React 单页应用的设计与落地，关注性能优化与工程化建设，擅长把复杂交互拆成可维护的组件体系。',
+  "summary": {
+    "title": "个人总结",
+    "icon": "article",
+    "columns": 1,
+    "hidden": false,
+    "showHeading": true,
+    "keepTogether": false,
+    "startOnNewPage": false,
+    "content": "机械工程师，英国布里斯托大学本硕背景（2015-2020），2021年加入SLB，现居上海。主要负责井下电池的电芯设计及电池产线相关设计工作。具备成本控制与供应商整合经验，曾通过减少2家供应商、推动核心部件自研的方式有效降低电池成本。"
   },
-  sections: {
-    profiles: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
-        {
-          id: 'pf-github',
-          hidden: false,
-          icon: '',
-          iconColor: '',
-          network: 'GitHub',
-          username: 'liming',
-          website: { url: 'https://github.com/liming', label: 'github.com/liming', inlineLink: false },
-        },
-      ],
+  "sections": {
+    "profiles": {
+      "title": "社交资料",
+      "icon": "",
+      "columns": 1,
+      "hidden": true,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    experience: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
+    "experience": {
+      "title": "工作经历",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": [
         {
-          id: 'exp-1',
-          hidden: false,
-          company: '某科技有限公司',
-          position: '高级前端工程师',
-          location: '上海',
-          period: '2022.03 - 至今',
-          website: { url: '', label: '', inlineLink: false },
-          description:
-            '负责核心 SaaS 控制台的前端架构升级：\n- 引入模块联邦拆分巨石应用，构建时间从 12 分钟降到 4 分钟\n- 设计基于 TanStack Query 的数据层规范，统一 30+ 页面的请求缓存策略\n- 主导可视化搭建平台 0 到 1，支撑运营侧每周上百个活动页产出',
-          roles: [],
-        },
-        {
-          id: 'exp-2',
-          hidden: false,
-          company: '某互联网公司',
-          position: '前端工程师',
-          location: '杭州',
-          period: '2019.07 - 2022.02',
-          website: { url: '', label: '', inlineLink: false },
-          description: '参与电商主站改版与营销活动页开发，沉淀通用组件库 40+ 个，覆盖 80% 业务场景。',
-          roles: [],
-        },
-      ],
+          "id": "exp-1",
+          "hidden": false,
+          "company": "SLB",
+          "position": "机械工程师",
+          "location": "上海",
+          "period": "2021 - 至今",
+          "website": {
+            "url": "",
+            "label": "",
+            "inlineLink": false
+          },
+          "description": "- 负责井下电池的电芯设计工作\n- 在电池产线负责电池设计相关工作\n- 通过减少2家供应商、转为自研的方式降低电池成本",
+          "roles": []
+        }
+      ]
     },
-    education: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
+    "education": {
+      "title": "教育背景",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": [
         {
-          id: 'edu-1',
-          hidden: false,
-          school: '浙江大学',
-          degree: '本科',
-          area: '软件工程',
-          grade: '',
-          location: '杭州',
-          period: '2015 - 2019',
-          website: { url: '', label: '', inlineLink: false },
-          description: '',
-        },
-      ],
-    },
-    projects: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
-        {
-          id: 'prj-1',
-          hidden: false,
-          name: 'resume-editor（本项目）',
-          period: '2024 - 至今',
-          website: { url: '', label: '', inlineLink: false },
-          description: '把开源简历编辑器的编辑模型移植到自有项目：Redux Toolkit 实现 undo/redo 与自动保存，预览侧用纯 HTML 渲染 JSON 数据。',
-        },
-      ],
-    },
-    skills: {
-      title: '',
-      icon: '',
-      columns: 1,
-      layout: 'default',
-      keywordLayout: 'inline',
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
-        {
-          id: 'sk-1',
-          hidden: false,
-          icon: '',
-          iconColor: '',
-          name: '前端框架',
-          proficiency: '精通',
-          level: 5,
-          keywords: ['React', 'Vue', 'TanStack Router'],
+          "id": "edu-1",
+          "hidden": false,
+          "school": "布里斯托大学（University of Bristol）",
+          "degree": "硕士",
+          "area": "",
+          "grade": "",
+          "location": "英国布里斯托",
+          "period": "2020",
+          "website": {
+            "url": "",
+            "label": "",
+            "inlineLink": false
+          },
+          "description": ""
         },
         {
-          id: 'sk-2',
-          hidden: false,
-          icon: '',
-          iconColor: '',
-          name: '工程化',
-          proficiency: '熟练',
-          level: 4,
-          keywords: ['Vite', 'Turborepo', 'CI/CD'],
+          "id": "edu-2",
+          "hidden": false,
+          "school": "布里斯托大学（University of Bristol）",
+          "degree": "本科",
+          "area": "",
+          "grade": "",
+          "location": "英国布里斯托",
+          "period": "",
+          "website": {
+            "url": "",
+            "label": "",
+            "inlineLink": false
+          },
+          "description": ""
+        }
+      ]
+    },
+    "projects": {
+      "title": "项目经历",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
+    },
+    "skills": {
+      "title": "专业技能",
+      "icon": "",
+      "columns": 1,
+      "layout": "default",
+      "keywordLayout": "inline",
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": [
+        {
+          "id": "sk-1",
+          "hidden": false,
+          "icon": "",
+          "iconColor": "",
+          "name": "电池设计",
+          "proficiency": "熟练",
+          "level": 4,
+          "keywords": [
+            "电池设计",
+            "电芯设计",
+            "井下电池"
+          ]
         },
         {
-          id: 'sk-3',
-          hidden: false,
-          icon: '',
-          iconColor: '',
-          name: '语言',
-          proficiency: '熟练',
-          level: 4,
-          keywords: ['TypeScript', 'Node.js', 'Go'],
+          "id": "sk-2",
+          "hidden": false,
+          "icon": "",
+          "iconColor": "",
+          "name": "机械工程",
+          "proficiency": "熟练",
+          "level": 4,
+          "keywords": [
+            "机械工程",
+            "机械设计"
+          ]
         },
-      ],
+        {
+          "id": "sk-3",
+          "hidden": false,
+          "icon": "",
+          "iconColor": "",
+          "name": "成本与供应链管理",
+          "proficiency": "熟练",
+          "level": 4,
+          "keywords": [
+            "成本控制",
+            "供应商整合",
+            "自研开发"
+          ]
+        }
+      ]
     },
-    languages: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
-        { id: 'lang-1', hidden: false, language: '中文', fluency: '母语', level: 5 },
-        { id: 'lang-2', hidden: false, language: '英语', fluency: 'CET-6', level: 3 },
-      ],
+    "languages": {
+      "title": "语言能力",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    interests: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
-        { id: 'it-1', hidden: false, icon: '', iconColor: '', name: '开源', keywords: ['翻译文档', '提交 PR'] },
-      ],
+    "interests": {
+      "title": "兴趣爱好",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    awards: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [],
+    "awards": {
+      "title": "荣誉奖项",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    certifications: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [],
+    "certifications": {
+      "title": "证书认证",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    publications: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [],
+    "publications": {
+      "title": "出版物",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    volunteer: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [],
+    "volunteer": {
+      "title": "志愿经历",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
     },
-    references: {
-      title: '',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [],
-    },
+    "references": {
+      "title": "推荐人",
+      "icon": "",
+      "columns": 1,
+      "hidden": false,
+      "showHeading": true,
+      "keepTogether": false,
+      "startOnNewPage": false,
+      "items": []
+    }
   },
-  customSections: [
-    {
-      id: 'cs-open-source',
-      title: '开源贡献',
-      type: 'projects',
-      icon: '',
-      columns: 1,
-      hidden: false,
-      showHeading: true,
-      keepTogether: false,
-      startOnNewPage: false,
-      items: [
+  "customSections": [],
+  "metadata": {
+    "template": "onyx",
+    "layout": {
+      "sidebarWidth": 32,
+      "pages": [
         {
-          id: 'cs-item-1',
-          hidden: false,
-          name: 'reactive-resume 文档中文化',
-          period: '2023',
-          website: { url: '', label: '', inlineLink: false },
-          description: '组织社区翻译 30 篇使用指南，维护中文文档仓库。',
-        },
-      ],
+          "fullWidth": false,
+          "main": [
+            "summary",
+            "experience",
+            "education",
+            "projects",
+            "skills",
+            "languages"
+          ],
+          "sidebar": []
+        }
+      ]
     },
-  ],
-  metadata: {
-    template: 'onyx',
-    layout: {
-      sidebarWidth: 32,
-      pages: [
-        {
-          fullWidth: false,
-          main: ['summary', 'experience', 'education', 'cs-open-source'],
-          sidebar: ['profiles', 'skills', 'languages', 'interests'],
-        },
-        { fullWidth: true, main: ['projects'], sidebar: [] },
-      ],
+    "page": {
+      "gapX": 4,
+      "gapY": 6,
+      "marginX": 14,
+      "marginY": 12,
+      "format": "a4",
+      "locale": "zh-CN",
+      "dateFormat": "short",
+      "hideLinkUnderline": false,
+      "hideIcons": false,
+      "hideSectionIcons": true
     },
-    page: {
-      gapX: 4,
-      gapY: 6,
-      marginX: 14,
-      marginY: 12,
-      format: 'a4',
-      locale: 'zh-CN',
-      dateFormat: 'short',
-      hideLinkUnderline: false,
-      hideIcons: false,
-      hideSectionIcons: true,
-    },
-    design: {
-      colors: {
-        primary: 'rgba(175, 175, 175, 1)',
-        text: 'rgba(0, 0, 0, 1)',
-        background: 'rgba(255, 255, 255, 1)',
+    "design": {
+      "colors": {
+        "primary": "rgba(175,175,175,1)",
+        "text": "rgba(0,0,0,1)",
+        "background": "rgba(255,255,255,1)"
       },
-      level: { icon: 'star', type: 'circle' },
+      "level": {
+        "icon": "star",
+        "type": "circle"
+      }
     },
-    typography: {
-      body: { fontFamily: 'IBM Plex Serif', fontWeights: ['400'], fontSize: 10, lineHeight: 1.5 },
-      heading: { fontFamily: 'IBM Plex Serif', fontWeights: ['600'], fontSize: 14, lineHeight: 1.5 },
+    "typography": {
+      "body": {
+        "fontFamily": "IBM Plex Serif",
+        "fontWeights": [
+          "400"
+        ],
+        "fontSize": 10,
+        "lineHeight": 1.5
+      },
+      "heading": {
+        "fontFamily": "IBM Plex Serif",
+        "fontWeights": [
+          "600"
+        ],
+        "fontSize": 14,
+        "lineHeight": 1.5
+      }
     },
-    notes: '',
-    styleRules: [],
-  },
+    "notes": "",
+    "styleRules": []
+  }
 }
 
 /** 构造一份 mock 简历；任意 resumeId 都返回同一份数据。 */

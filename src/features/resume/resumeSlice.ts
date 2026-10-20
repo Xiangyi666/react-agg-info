@@ -54,6 +54,8 @@ export interface ResumeState {
   redoStack: ResumeData[]
   canUndo: boolean
   canRedo: boolean
+  /** 左侧大纲悬停的分区 id，右侧画板对应区块高亮。 */
+  hoveredSectionId: string | null
 }
 
 const initialState: ResumeState = {
@@ -65,6 +67,7 @@ const initialState: ResumeState = {
   redoStack: [],
   canUndo: false,
   canRedo: false,
+  hoveredSectionId: null,
 }
 
 /** updateResumeData 的 payload：草稿函数 + 撤销合并选项。 */
@@ -179,6 +182,11 @@ const resumeSlice = createSlice({
       state.resume.showDownloadButtons = incoming.showDownloadButtons
     },
 
+    /** 左侧大纲悬停联动右侧画板高亮。 */
+    setHoveredSection(state, action: PayloadAction<string | null>) {
+      state.hoveredSectionId = action.payload
+    },
+
     /** 从服务端整体替换（外部修改）。数据不同则本地撤销历史失效。 */
     replaceResumeFromServer(state, action: PayloadAction<Resume>) {
       const incoming = action.payload
@@ -205,6 +213,7 @@ export const {
   updateResumeData,
   applyHistoryStep,
   setSaveStatus,
+  setHoveredSection,
   mergeResumeMetadata,
   replaceResumeFromServer,
 } = resumeSlice.actions
