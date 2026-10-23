@@ -1,4 +1,4 @@
-import type { result } from '../types'
+import type { result } from '@/types'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

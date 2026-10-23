@@ -1,7 +1,7 @@
 import Bars from '../features/mainSearch/components/bars'
 import Filter from '../features/mainSearch/components/filter'
 import ResultList from '../features/mainSearch/components/resultList'
-import type { searchParams } from '../features/mainSearch/types'
+import type { searchParams } from '@/types'
 import { useState } from 'react'
 export default function MainSearch() {
   const [searchParams, setSearchParams] = useState<searchParams>({

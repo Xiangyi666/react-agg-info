@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
+const BASE_URL = import.meta.env.VITE_API_URL 
 
 type QueryValue = string | number | boolean | undefined | null
 
@@ -40,7 +40,22 @@ async function parseBody(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type') ?? ''
   return contentType.includes('application/json') ? JSON.parse(text) : text
 }
+export async function requestStream(
+  path: string,
+  options: RequestOptions = {}
+): Promise<Response> {
+  const { body, params, headers, ...init } = options
+  const url = `${BASE_URL}${path}`
+  const finalHeaders = new Headers(headers)
+  finalHeaders.set('Content-Type', 'application/json')
+  const response = await fetch(url, {
+    ...init,
+    headers: finalHeaders,
+    body: JSON.stringify({...params})
+  })
 
+  return response
+}
 export async function request<T>(
   path: string,
   options: RequestOptions = {}
@@ -80,4 +95,6 @@ export const http = {
     request<T>(path, { ...options, method: 'PATCH', body }),
   delete: <T>(path: string, options?: MethodOptions) =>
     request<T>(path, { ...options, method: 'DELETE' }),
+  stream: (path: string, options?: MethodOptions) =>
+    requestStream(path, { ...options, method: 'POST'}),
 }

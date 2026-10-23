@@ -1,4 +1,4 @@
-import type { resultData, searchParams, SearchResponse } from '../types'
+import type { resultData, searchParams, SearchResponse } from '@/types'
 import { http } from '@/services/api'
 
 // 后端未就绪时的本地 mock 开关：真实接口可用后改成 false 即可

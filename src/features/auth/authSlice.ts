@@ -7,9 +7,13 @@ interface AuthState {
   token: string | null
 }
 
+/**
+ * 单机部署：不做真实鉴权，应用启动即视为已登录（死账号）。
+ * 接真实后端时改回 { user: null, token: null }，由 LoginForm 走 /auth/login。
+ */
 const initialState: AuthState = {
-  user: null,
-  token: null,
+  user: { id: 'demo_user', name: 'Demo User', email: 'demo@example.com' },
+  token: 'fake-token',
 }
 
 export const authSlice = createSlice({
