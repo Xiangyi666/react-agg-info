@@ -8,7 +8,8 @@ import { Artboard } from './components/artboard'
 import { SaveStatus, WritePanel } from './components/editor'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAppDispatch } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { Splitter } from '@mantine/core'
 import { Redo2, Undo2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -19,39 +20,50 @@ import { toast } from 'sonner'
  */
 
 interface ResumeEditorProps {
-  resumeId: string
+  /** 路由参数，非必需：渲染只依赖登录态的 userId。 */
+  resumeId?: string
+  /** 可选覆盖，缺省从 auth 分片取当前登录用户。 */
+  userId?: string
 }
 
 type LoadState = 'loading' | 'error' | 'ready'
 
-export function ResumeEditor({ resumeId }: ResumeEditorProps) {
+export function ResumeEditor({ resumeId, userId: userIdProp }: ResumeEditorProps) {
   const dispatch = useAppDispatch()
+  const user = useAppSelector((state) => state.auth.user)
   const resume = useCurrentResume()
   const canUndo = useCanUndo()
   const canRedo = useCanRedo()
   const [loadState, setLoadState] = useState<LoadState>('loading')
-
+  const userId = userIdProp ?? user?.id
   // 保存运行时（防抖、离线暂存、重试）与本页面同生命周期
-  useSaveRuntime(resumeId)
+  if (resumeId) useSaveRuntime(resumeId)
 
-  // 装载：取服务端数据，叠加本机未保存的改动后初始化 store
+  // 装载：按 userId 取服务端渲染数据（resumeId 非必需），叠加本机未保存的改动后初始化 store
   useEffect(() => {
+    if (!userId) {
+      setLoadState('error')
+      return
+    }
+
     let cancelled = false
     setLoadState('loading')
+    // 未保存数据的存取 key：有 resumeId 用 resumeId（与保存运行时一致），否则退回 userId
+    const storageKey = resumeId ?? userId
 
     void (async () => {
       try {
-        const fetched = await fetchResume(resumeId)
+        const fetched = await fetchResume(userId)
         if (cancelled) return
 
         // 上次离线/崩溃没保存成功的数据优先于服务端版本
-        const unsaved = readUnsavedData(resumeId)
+        const unsaved = readUnsavedData(storageKey)
         let restored = fetched
         if (unsaved && !deepEqual(unsaved, fetched.data)) {
           restored = { ...fetched, data: unsaved }
         } else if (unsaved) {
           // 内容一致说明已保存成功，清掉残留
-          clearUnsavedData(resumeId)
+          clearUnsavedData(storageKey)
         }
 
         dispatch(initialize(restored))
@@ -71,7 +83,7 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
       cancelled = true
       dispatch(reset())
     }
-  }, [dispatch, resumeId])
+  }, [dispatch, resumeId, userId])
 
   // 撤销/重做快捷键：输入框内让浏览器原生文本撤销接管
   useEffect(() => {
@@ -111,7 +123,7 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
     return (
       <div className="grid gap-3">
         <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-[380px_1fr] gap-6">
+        <div className="grid grid-cols-[800px_1fr] gap-6">
           <div className="grid gap-3">
             <Skeleton className="h-44 rounded-xl" />
             <Skeleton className="h-32 rounded-xl" />
@@ -124,7 +136,7 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
   }
 
   return (
-    <div className="border-border -m-4 flex flex-col rounded-xl border" style={{ height: 'calc(100vh - 11rem)' }}>
+    <div className="border-border -m-4 flex flex-col rounded-xl border w-full" style={{ height: 'calc(100vh - 11rem)' }}>
       {/* 顶栏：简历名 + 保存状态 + 撤销/重做 */}
       {/* <div className="border-border flex items-center gap-3 border-b px-4 py-2">
         <span className="truncate font-medium">{resume.name}</span>
@@ -153,15 +165,19 @@ export function ResumeEditor({ resumeId }: ResumeEditorProps) {
         </div>
       </div> */}
 
-      {/* 主体：左编辑面板 + 右预览画板 */}
-      <div className="grid min-h-0 flex-1 grid-cols-[540px_1fr]">
-        <aside className="border-border min-h-0 overflow-y-auto border-r">
-          <WritePanel />
-        </aside>
-        <section className="bg-muted/40 min-h-0 overflow-auto p-8">
-          <Artboard />
-        </section>
-      </div>
+      {/* 主体：左编辑面板 + 右预览画板，分隔条可拖拽调宽（双击重置默认比例） */}
+      <Splitter className="min-h-0 w-full" lineSize={1} handleColor="gray.3">
+        <Splitter.Pane defaultSize={30} >
+          <aside className="h-full overflow-y-auto">
+            <WritePanel />
+          </aside>
+        </Splitter.Pane>
+        <Splitter.Pane defaultSize={70}>
+          <section className="bg-muted/40 h-full overflow-y-auto p-8">
+            <Artboard />
+          </section>
+        </Splitter.Pane>
+      </Splitter>
     </div>
   )
 }

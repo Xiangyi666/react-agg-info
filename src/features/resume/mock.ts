@@ -322,11 +322,11 @@ const data: ResumeData = {
   }
 }
 
-/** 构造一份 mock 简历；任意 resumeId 都返回同一份数据。 */
-export function createMockResume(resumeId: string): Resume {
+/** 构造一份 mock 简历；任意 userId 都返回同一份数据。 */
+export function createMockResume(userId: string): Resume {
   const now = new Date().toISOString()
   return {
-    id: resumeId,
+    id: userId,
     name: '我的中文简历',
     slug: 'my-resume',
     tags: ['默认'],

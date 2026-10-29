@@ -1,5 +1,3 @@
-import type { ApiResponse } from '@/types/api'
-
 /**
  * 简历数据的 TS 类型定义，移植自 reactive-resume 的 packages/schema/src/resume/data.ts。
  * 顶层结构与字段名和源项目保持一致，服务端返回同形状的 JSON 即可直接填充编辑器。
@@ -287,8 +285,14 @@ export interface Resume {
   showDownloadButtons?: boolean
   applicationId?: string | null
 }
-
-export type ResumeResponse = ApiResponse<Resume>
+/**
+ * POST /render 的响应体：resume_json 即简历正文 JSON，失败时为 null 并带 error 文案。
+ * 渲染只需要 user_id，不依赖 resumeId。
+ */
+export interface RenderResponse {
+  resume_json: ResumeData | null
+  error?: string | null
+}
 
 /**
  * 保存状态机：

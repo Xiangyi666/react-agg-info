@@ -14,4 +14,9 @@ export default [
       {id: '2-3', name: 'VDD', route: '/edit'},
     ]
   },
+  {
+    id: '3',
+    name: 'Resume',
+    route: '/resume/default',
+  },
 ]

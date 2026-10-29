@@ -17,6 +17,16 @@ export const chatSlice = createSlice({
     pushMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload)
     },
+    refreshMessage: (state, action: PayloadAction<ChatMessage>) => {
+      const id = action.payload.id
+      const status = action.payload.status
+      const existingMessage = state.messages.find((message) => message.id === id)
+      if(existingMessage) {
+        existingMessage.content = action.payload.content
+        existingMessage.status = status
+        return
+      }
+    },
     initChat: (state) => {
       state.messages = []
     },
@@ -26,5 +36,5 @@ export const chatSlice = createSlice({
   },
 })
 
-export const { pushMessage } = chatSlice.actions
+export const { pushMessage, refreshMessage, initChat, fullfillMessages } = chatSlice.actions
 export default chatSlice.reducer

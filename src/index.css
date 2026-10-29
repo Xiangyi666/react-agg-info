@@ -77,6 +77,10 @@
   --ring: oklch(0.708 0 0);
   --ink: #1a1a1a;
   --brand: #698afd;
+  /* 滚动条专用：浅蓝滑块 + hover 加深（定义在普通 :root 以保证输出，
+     不走 @theme inline ——那里的变量未被 utility 引用时会被 tree-shake 掉） */
+  --scrollbar-thumb: #dae2ff;
+  --scrollbar-thumb-hover: #bcccff;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -132,4 +136,42 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
+}
+
+/* ===== 全局滚动条：细条 + 浅色主题色 ===== */
+/* 标准属性只有 Firefox 能用：它不支持 ::-webkit-scrollbar 伪元素。
+   Chrome 121+ 一旦设了 scrollbar-width/color 就会忽略 ::-webkit-scrollbar，
+   故用 @supports 把标准属性限定给「不认识 webkit 伪元素」的浏览器，让 Chromium/WebKit 走下面可自由调像素的方案 */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+/* WebKit/Blink（Chrome/Safari/Edge）：width 即轨道宽，thumb 再用透明 border + content-box 内缩出更细的可见滑块。
+   可见滑块宽 = width - 2×border；当前 6 - 2×1 = 4px。想更细就加大 border 或减小 width（border 须 < width/2 否则滑块消失） */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* 横竖滚动条交汇处不留白块 */
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }

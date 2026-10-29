@@ -22,7 +22,7 @@ export function PageView({ data, page }: PageViewProps) {
     <div
       className="shadow-xl"
       style={{
-        width: '1000px',
+        width: '100%',
         minHeight: '1123px',
         backgroundColor: colors.background,
         color: colors.text,

@@ -12,7 +12,7 @@ interface AuthState {
  * 接真实后端时改回 { user: null, token: null }，由 LoginForm 走 /auth/login。
  */
 const initialState: AuthState = {
-  user: { id: 'demo_user', name: 'Demo User', email: 'demo@example.com' },
+  user: { id: 'demo_user_xy', name: 'Demo User_xy', email: 'demo@example.com' },
   token: 'fake-token',
 }
 
